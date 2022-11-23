@@ -1,0 +1,29 @@
+[
+    {
+        "id": 1,
+        "title": "asp.net core 7.0",
+        "author": "pouria nayeb",
+        "episodes": [
+            { "id": 1, "title": "middleware", "url": "https://pouria-nayeb.com/middleware.mp4" },
+            { "id": 2, "title": "controllers", "url": "https://pouria-nayeb.com/controllers.mp4" }
+        ]
+    },
+    {
+        "id": 2,
+        "title": "python",
+        "author": "pouria nayeb",
+        "episodes": [
+            { "id": 3, "title": "views", "url": "https://pouria-nayeb.com/views.mp4" },
+            { "id": 4, "title": "models", "url": "https://pouria-nayeb.com/models.mp4" }
+        ]
+    },
+    {
+        "id": 3,
+        "title": "node.js and express.js",
+        "author": "pouria nayeb",
+        "episodes": [
+            { "id": 5, "title": "orm", "url": "https://pouria-nayeb.com/orm.mp4" },
+            { "id": 6, "title": "database", "url": "https://pouria-nayeb.com/database.mp4" }
+        ]
+    }
+]

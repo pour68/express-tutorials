@@ -1,0 +1,23 @@
+{
+  "name": "express-tutorials",
+  "version": "1.0.0",
+  "description": "express framework tutorials",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "keywords": [],
+  "author": "Pouria Nayeb",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "date-fns": "^2.29.3",
+    "express": "^4.18.2",
+    "joi": "^17.7.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
