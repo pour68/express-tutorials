@@ -11,6 +11,7 @@ const corsSettings = require("./settings/corsSettings");
 // routes
 const indexRoute = require("./routes/indexRoute");
 const courseRoute = require("./routes/courseRoute");
+const employeeRoute = require("./routes/api/employeeRoute");
 
 // manage logger
 app.use(loggerMiddleware);
@@ -25,12 +26,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // static files
-app.use(express.static(path.join(__dirname, "public")));
-app.use("/courses", express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "wwwroot")));
+app.use("/courses", express.static(path.join(__dirname, "wwwroot")));
 
 // register routes
 app.use("/", indexRoute);
 app.use("/courses", courseRoute);
+app.use("/api/employees", employeeRoute);
 
 // manage 404 page
 app.all("*", (req, res) => {

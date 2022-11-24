@@ -75,6 +75,4 @@ app.use((req, res, next) => {
 
 npm i cors
 
-
-
 ## routes
