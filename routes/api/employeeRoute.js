@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const EmployeesController = require("../../controllers/employeesController");
+const jwtVerifyMiddleware = require("../../middlewares/jwtVerifyMiddleware");
 
 const employeesController = new EmployeesController();
 
 router
   .route("/")
-  .get(employeesController.getAllEmployees)
+  .get(jwtVerifyMiddleware, employeesController.getAllEmployees)
   .post(employeesController.createNewEmployee)
   .put(employeesController.updateEmployee);
 

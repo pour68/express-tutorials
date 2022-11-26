@@ -3,14 +3,17 @@ const path = require("path");
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 // middleware handlers
 const loggerMiddleware = require("./middlewares/loggerMiddleware");
 const errorMiddleware = require("./middlewares/errorMiddleware");
+const jwtVerifyMiddleware = require("./middlewares/jwtVerifyMiddleware");
 // cors settings
 const corsSettings = require("./settings/corsSettings");
 // routes
 const indexRoute = require("./routes/indexRoute");
 const courseRoute = require("./routes/courseRoute");
+const authRoute = require("./routes/authRoute");
 const employeeRoute = require("./routes/api/employeeRoute");
 
 // manage logger
@@ -25,12 +28,21 @@ app.use(express.urlencoded({ extended: false }));
 // serialize/deserialize json data
 app.use(express.json());
 
+// enable cookies
+app.use(cookieParser());
+
 // static files
 app.use(express.static(path.join(__dirname, "wwwroot")));
 app.use("/courses", express.static(path.join(__dirname, "wwwroot")));
 
 // register routes
 app.use("/", indexRoute);
+app.use("/auth", authRoute); // auth/register|login
+
+// jwt
+app.use(jwtVerifyMiddleware);
+
+// protected routes
 app.use("/courses", courseRoute);
 app.use("/api/employees", employeeRoute);
 

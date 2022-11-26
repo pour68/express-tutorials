@@ -76,3 +76,30 @@ app.use((req, res, next) => {
 npm i cors
 
 ## routes
+
+## Models
+
+## Controllers
+
+## Views
+
+## bcryprt module/package
+
+npm i bcrypt
+
+## dotenv module/package
+
+npm i dotenv
+
+## jsonwebtoken module/package
+
+npm i jsonwebtoken
+
+## cookie-parser
+
+npm i cookie-parser
+
+## generate random crypto
+
+- command prompt > node > press enter
+- require("crypto").randomBytes(64).toString("hex")
