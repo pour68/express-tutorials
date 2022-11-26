@@ -81,3 +81,8 @@
 2022/11/26-20:47:32 	 9a8dbe8b-d23c-4c8e-8738-a19f6caf08c2 	 GET undefined /auth/refresh-token 
 2022/11/26-20:47:32 	 9a8dbe8b-d23c-4c8e-8738-a19f6caf08c2 	 POST undefined /auth/logout 
 2022/11/26-20:47:32 	 9a8dbe8b-d23c-4c8e-8738-a19f6caf08c2 	 GET undefined /auth/logout 
+2022/11/26-21:09:06 	 a94a9b61-07eb-4f02-bf1c-ac2e63f92546 	 GET undefined /auth/register 
+2022/11/26-21:09:06 	 a94a9b61-07eb-4f02-bf1c-ac2e63f92546 	 GET undefined /auth/register 
+2022/11/26-21:09:06 	 a94a9b61-07eb-4f02-bf1c-ac2e63f92546 	 POST undefined /auth/register 
+2022/11/26-21:10:42 	 2295e598-3e26-4801-960d-71b1f080d29e 	 POST undefined /auth/login 
+2022/11/26-21:11:39 	 086143cf-08fe-421c-9558-322c452bf238 	 GET undefined /auth/logout 
