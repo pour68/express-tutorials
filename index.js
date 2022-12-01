@@ -4,17 +4,22 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const mongoose = require("mongoose");
 // middleware handlers
 const loggerMiddleware = require("./middlewares/loggerMiddleware");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 const jwtVerifyMiddleware = require("./middlewares/jwtVerifyMiddleware");
-// cors settings
+// settings
 const corsSettings = require("./settings/corsSettings");
+const dbConnectionUtils = require("./utils/dbConnUtils");
 // routes
 const indexRoute = require("./routes/indexRoute");
 const courseRoute = require("./routes/courseRoute");
 const authRoute = require("./routes/authRoute");
 const employeeRoute = require("./routes/api/employeeRoute");
+
+// conenct to mangodb
+dbConnectionUtils();
 
 // manage logger
 app.use(loggerMiddleware);
@@ -61,8 +66,12 @@ app.all("*", (req, res) => {
 // manage error logger
 app.use(errorMiddleware);
 
-const PORT = process.env.PORT || 3500;
+// mangodb and server app is up and running
+mongoose.connection.once("open", () => {
+  console.log("mongodb is connected...");
 
-app.listen(PORT, () =>
-  console.log(`server is up and running http://localhost:${PORT}`)
-);
+  const PORT = process.env.PORT || 3500;
+  app.listen(PORT, () =>
+    console.log(`server is now up and running on http://localhost:${PORT}`)
+  );
+});

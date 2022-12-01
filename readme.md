@@ -103,3 +103,7 @@ npm i cookie-parser
 
 - command prompt > node > press enter
 - require("crypto").randomBytes(64).toString("hex")
+
+## mangoose module/package
+
+npm i mongoose

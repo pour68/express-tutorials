@@ -65,8 +65,10 @@ class AuthController {
 
     if (match) {
       // jwt
-      const accessToken = generateAccessToken(foundUser.username, "15m");
-      const refreshToken = generateRefreshToken(foundUser.username, "1d");
+      const roles = Object.values(foundUser.roles);
+      const payload = { roles, username: foundUser.username };
+      const accessToken = generateAccessToken(payload, "15m");
+      const refreshToken = generateRefreshToken(payload, "1d");
 
       const otherUsers = userService.getOtherUsers(foundUser.username);
       const currentUser = { ...foundUser, refreshToken };
@@ -111,7 +113,9 @@ class AuthController {
         if (err || foundUser.username !== decoded.username)
           return res.sendStatus(403); // forbidden
 
-        const accessToken = generateAccessToken(decoded.username, "15m");
+        const roles = Object.values(foundUser.roles);
+        const payload = { roles, username: foundUser.username };
+        const accessToken = generateAccessToken(payload, "15m");
 
         res.json({ accessToken });
       }
