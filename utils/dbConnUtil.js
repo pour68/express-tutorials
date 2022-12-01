@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const options = require("../settings/dbConnSettings");
+const options = require("../settings/dbConnSetting");
 
 const dbConnection = async () => {
   try {

@@ -4,14 +4,15 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 // middleware handlers
 const loggerMiddleware = require("./middlewares/loggerMiddleware");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 const jwtVerifyMiddleware = require("./middlewares/jwtVerifyMiddleware");
 // settings
-const corsSettings = require("./settings/corsSettings");
-const dbConnectionUtils = require("./utils/dbConnUtils");
+const corsSetting = require("./settings/corsSetting");
+// utils
+const dbConnectionUtil = require("../utils/dbConnUtil");
 // routes
 const indexRoute = require("./routes/indexRoute");
 const courseRoute = require("./routes/courseRoute");
@@ -19,13 +20,13 @@ const authRoute = require("./routes/authRoute");
 const employeeRoute = require("./routes/api/employeeRoute");
 
 // conenct to mangodb
-dbConnectionUtils();
+// dbConnectionUtil();
 
 // manage logger
 app.use(loggerMiddleware);
 
 // manage cors
-app.use(cors(corsSettings));
+app.use(cors(corsSetting));
 
 // manage form data
 app.use(express.urlencoded({ extended: false }));
@@ -67,11 +68,11 @@ app.all("*", (req, res) => {
 app.use(errorMiddleware);
 
 // mangodb and server app is up and running
-mongoose.connection.once("open", () => {
-  console.log("mongodb is connected...");
+// mongoose.connection.once("open", () => {
+//   console.log("mongodb is connected...");
 
-  const PORT = process.env.PORT || 3500;
-  app.listen(PORT, () =>
-    console.log(`server is now up and running on http://localhost:${PORT}`)
-  );
-});
+const PORT = process.env.PORT || 3500;
+app.listen(PORT, () =>
+  console.log(`server is now up and running on http://localhost:${PORT}`)
+);
+// });
