@@ -12,10 +12,6 @@ router
   .post(
     verifyRolesMiddleware(roles.Admin, roles.Editor),
     employeesController.createNewEmployee
-  )
-  .put(
-    verifyRolesMiddleware(roles.Admin, roles.Editor),
-    employeesController.updateEmployee
   );
 
 router
@@ -24,6 +20,9 @@ router
   .delete(
     verifyRolesMiddleware(roles.Admin),
     employeesController.deleteEmployee
+  ).put(
+    verifyRolesMiddleware(roles.Admin, roles.Editor),
+    employeesController.updateEmployee
   );
 
 module.exports = router;

@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-// const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 // middleware handlers
 const loggerMiddleware = require("./middlewares/loggerMiddleware");
 const errorMiddleware = require("./middlewares/errorMiddleware");
@@ -12,7 +12,7 @@ const jwtVerifyMiddleware = require("./middlewares/jwtVerifyMiddleware");
 // settings
 const corsSetting = require("./settings/corsSetting");
 // utils
-const dbConnectionUtil = require("../utils/dbConnUtil");
+const dbConnectionUtil = require("./utils/dbConnUtil");
 // routes
 const indexRoute = require("./routes/indexRoute");
 const courseRoute = require("./routes/courseRoute");
@@ -20,7 +20,7 @@ const authRoute = require("./routes/authRoute");
 const employeeRoute = require("./routes/api/employeeRoute");
 
 // conenct to mangodb
-// dbConnectionUtil();
+dbConnectionUtil();
 
 // manage logger
 app.use(loggerMiddleware);
@@ -43,13 +43,13 @@ app.use("/courses", express.static(path.join(__dirname, "wwwroot")));
 
 // register routes
 app.use("/", indexRoute);
+app.use("/courses", courseRoute);
 app.use("/auth", authRoute); // auth/register|login
 
 // jwt
 app.use(jwtVerifyMiddleware);
 
 // protected routes
-app.use("/courses", courseRoute);
 app.use("/api/employees", employeeRoute);
 
 // manage 404 page
@@ -68,11 +68,11 @@ app.all("*", (req, res) => {
 app.use(errorMiddleware);
 
 // mangodb and server app is up and running
-// mongoose.connection.once("open", () => {
-//   console.log("mongodb is connected...");
+mongoose.connection.once("open", () => {
+  console.log("mongodb is connected...");
 
-const PORT = process.env.PORT || 3500;
-app.listen(PORT, () =>
-  console.log(`server is now up and running on http://localhost:${PORT}`)
-);
-// });
+  const PORT = process.env.PORT || 3500;
+  app.listen(PORT, () =>
+    console.log(`server is now up and running on http://localhost:${PORT}`)
+  );
+});

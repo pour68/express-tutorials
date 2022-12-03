@@ -1,51 +1,54 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const UserService = require("../services/userService");
+const UserService = require("../services/mangodb/userService");
 const randomSalt = require("../utils/securityUtils");
 const {
   generateAccessToken,
   generateRefreshToken,
 } = require("../utils/jwtUtils");
 
-const usersDB = {
-  users: require("../data/users.json"),
-  setUsers: function (users) {
-    this.users = users;
-  },
-};
-
 class AuthController {
   async register(req, res) {
     const { username, pwd } = req.body;
+
+    if (!username || !pwd)
+      return res.status(400).json({
+        level: "error",
+        message: "please enter valid username/password.",
+      });
+
     const userService = new UserService();
     // check user duplication
-    const getUserByUsername = userService.getByUsername(username);
-
-    if (getUserByUsername)
+    const foundUser = await userService.getByUsername(username);
+    if (foundUser)
       return res
         .status(409)
-        .json({ level: "error", message: "user already exist." });
+        .json({ type: "error", message: "user already exist." });
 
     try {
-      const hashedPassowrd = await bcrypt.hash(pwd, 10);
+      const randomValue = randomSalt(100);
+      const hashedPassowrd = await bcrypt.hash(pwd, randomValue);
 
       const newUser = { username, pwd: hashedPassowrd };
 
       const createdUser = await userService.create(newUser);
 
       if (createdUser) {
+        // success
         return res.status(201).json({
-          level: "success",
+          type: "success",
           message: `user with username ${username} created.`,
         });
       } else {
+        // failed: technical issues like connection, ...
         return res.status(500).json({
-          level: "error",
+          type: "error",
           message: `db error.`,
         });
       }
     } catch (err) {
-      res.status(500).json({ level: "error", message: err.message });
+      // failed: db error
+      res.status(500).json({ type: "error", message: err.message });
     }
   }
 
@@ -54,14 +57,14 @@ class AuthController {
 
     const userService = new UserService();
 
-    const foundUser = userService.getByUsername(username);
+    const foundUser = await userService.getByUsername(username);
 
     if (!foundUser)
       return res
         .status(401)
-        .json({ level: "error", message: "user not registered." });
+        .json({ type: "error", message: "user not registered." });
 
-    const match = await bcrypt.compare(pwd, foundUser.pwd);
+    const match = await bcrypt.compare(pwd, foundUser.password);
 
     if (match) {
       // jwt
@@ -70,10 +73,14 @@ class AuthController {
       const accessToken = generateAccessToken(payload, "15m");
       const refreshToken = generateRefreshToken(payload, "1d");
 
-      const otherUsers = userService.getOtherUsers(foundUser.username);
-      const currentUser = { ...foundUser, refreshToken };
+      /* mangodb */
+      foundUser.refreshToken = refreshToken;
+      await foundUser.save();
 
-      await userService.saveUser(otherUsers, currentUser);
+      /* file as database */
+      // const otherUsers = userService.getOtherUsers(foundUser.username);
+      // const currentUser = { ...foundUser, refreshToken };
+      // await userService.saveUser(otherUsers, currentUser);
 
       res.cookie("jwt", refreshToken, {
         httpOnly: true,
@@ -81,28 +88,27 @@ class AuthController {
       });
 
       res.json({
-        level: "success",
-        message: `user ${foundUser.username} is logged in`,
+        type: "success",
+        message: `user ${foundUser.username} successfully logged in`,
         accessToken,
       });
     } else {
       res.status(401).json({
-        level: "error",
+        type: "error",
         message: `login failed`,
       });
     }
   }
 
-  refreshToken(req, res) {
+  async refreshToken(req, res) {
     const cookies = req.cookies;
 
-    if (!cookies?.jwt) return res.sendStatus(401); // unauthories
+    if (!cookies?.jwt) return res.sendStatus(401); // unauthorized
 
     const refreshToken = cookies.jwt;
 
     const userService = new UserService();
-    const foundUser = userService.getByRefreshToken(refreshToken);
-
+    const foundUser = await userService.getByRefreshToken(refreshToken);
     if (!foundUser) return res.sendStatus(403); // forbidden
 
     // jwt evaluation
@@ -132,21 +138,29 @@ class AuthController {
     const refreshToken = cookies.jwt;
 
     const userService = new UserService();
-
-    const foundUser = userService.getByRefreshToken(refreshToken);
-
+    const foundUser = await userService.getByRefreshToken(refreshToken);
     if (!foundUser) {
       res.clearCookie("jwt", { httpOnly: true });
       return res.status(403);
     }
 
-    const otherUsers = userService.getOtherUsersByRefreshToken(
-      foundUser.refreshToken
-    );
+    /* file as database */
+    // const otherUsers = userService.getOtherUsersByRefreshToken(
+    //   foundUser.refreshToken
+    // );
+    // const currentUser = { ...foundUser, refreshToken: "" };
+    // await userService.saveUser(otherUsers, currentUser);
 
-    const currentUser = { ...foundUser, refreshToken: "" };
+    /* mangodb */
+    foundUser.refreshToken = "";
+    const result = await foundUser.save();
 
-    await userService.saveUser(otherUsers, currentUser);
+    // failed: technical issues like connection, ...
+    if (!result)
+      return res.status(400).json({
+        type: "error",
+        message: "user logout failed.",
+      });
 
     res.clearCookie("jwt", { httpOnly: true }); // secure: true for https, sameSite: "None" and maxAge: 24*60*60*1000
     return res.sendStatus(204);
