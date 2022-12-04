@@ -26,7 +26,7 @@ class AuthController {
         .json({ type: "error", message: "user already exist." });
 
     try {
-      const randomValue = randomSalt(100);
+      const randomValue = randomSalt(10);
       const hashedPassowrd = await bcrypt.hash(pwd, randomValue);
 
       const newUser = { username, pwd: hashedPassowrd };
@@ -53,10 +53,10 @@ class AuthController {
   }
 
   async login(req, res) {
+    const cookies = req.cookies;
     const { username, pwd } = req.body;
 
     const userService = new UserService();
-
     const foundUser = await userService.getByUsername(username);
 
     if (!foundUser)
@@ -71,18 +71,34 @@ class AuthController {
       const roles = Object.values(foundUser.roles);
       const payload = { roles, username: foundUser.username };
       const accessToken = generateAccessToken(payload, "15m");
-      const refreshToken = generateRefreshToken(payload, "1d");
+      const newRefreshToken = generateRefreshToken(payload, "1d");
+
+      let newRefreshTokenList = !cookies?.jwt
+        ? foundUser.refreshToken
+        : foundUser.refreshToken.filter((rt) => rt !== cookies.jwt);
+
+      if (cookies?.jwt) {
+        /*
+            01. user login and never logout
+            02. rt is stolen
+            03. if 1 and 2 happen, remove all refresh tokens
+        */
+        const refreshToken = cookies.jwt;
+        const foundUserByToken = await userService.getByRefreshToken(
+          refreshToken
+        );
+
+        // detect refresh token reuse
+        if (!foundUserByToken) newRefreshTokenList = []; // clear all refresh tokens
+
+        res.clearCookie("jwt", { httpOnly: true });
+      }
 
       /* mangodb */
-      foundUser.refreshToken = refreshToken;
-      await foundUser.save();
+      foundUser.refreshToken = [...newRefreshTokenList, newRefreshToken];
+      const result = await foundUser.save();
 
-      /* file as database */
-      // const otherUsers = userService.getOtherUsers(foundUser.username);
-      // const currentUser = { ...foundUser, refreshToken };
-      // await userService.saveUser(otherUsers, currentUser);
-
-      res.cookie("jwt", refreshToken, {
+      res.cookie("jwt", newRefreshToken, {
         httpOnly: true,
         maxAge: 86_400_000,
       });
@@ -101,27 +117,67 @@ class AuthController {
   }
 
   async refreshToken(req, res) {
+    // step 1: get cookie from client
     const cookies = req.cookies;
 
+    // step 2: if cookie or jwt prop not exist
     if (!cookies?.jwt) return res.sendStatus(401); // unauthorized
 
+    // step 3: if cookie and jwt exist get jwt prop
     const refreshToken = cookies.jwt;
+
+    // step 4: remove jwt cookie from client machine
+    res.clearCookie("jwt", { httpOnly: true });
 
     const userService = new UserService();
     const foundUser = await userService.getByRefreshToken(refreshToken);
-    if (!foundUser) return res.sendStatus(403); // forbidden
+
+    // step 5: detected refresh token reuse
+    if (!foundUser) {
+      jwt.verify(
+        refreshToken,
+        process.env.REFRESH_TOKEN_SECRET,
+        async (err, decoded) => {
+          if (err) return res.sendStatus(403); // forbidden
+
+          const hackedUser = await userService.getByUsername(decoded.username);
+          hackedUser.refreshToken = [];
+          const result = await hackedUser.save();
+        }
+      );
+
+      return res.sendStatus(403); // forbidden
+    }
+
+    const newRefreshTokenArray = foundUser.refreshToken.filter(
+      (rt) => rt !== refreshToken
+    );
 
     // jwt evaluation
     jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET,
-      (err, decoded) => {
+      async (err, decoded) => {
+        if (err) {
+          foundUser.refreshToken = [...newRefreshTokenArray];
+          const result = await foundUser.save();
+        }
         if (err || foundUser.username !== decoded.username)
           return res.sendStatus(403); // forbidden
 
+        // refresh token is still valid
         const roles = Object.values(foundUser.roles);
         const payload = { roles, username: foundUser.username };
         const accessToken = generateAccessToken(payload, "15m");
+        const newRefreshToken = generateRefreshToken(payload, "1d");
+
+        foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
+        const result = await foundUser.save();
+
+        res.cookie("jwt", newRefreshToken, {
+          httpOnly: true,
+          maxAge: 86_400_000,
+        });
 
         res.json({ accessToken });
       }
@@ -144,15 +200,9 @@ class AuthController {
       return res.status(403);
     }
 
-    /* file as database */
-    // const otherUsers = userService.getOtherUsersByRefreshToken(
-    //   foundUser.refreshToken
-    // );
-    // const currentUser = { ...foundUser, refreshToken: "" };
-    // await userService.saveUser(otherUsers, currentUser);
-
-    /* mangodb */
-    foundUser.refreshToken = "";
+    foundUser.refreshToken = foundUser.refreshToken.filter(
+      (rt) => rt !== refreshToken
+    );
     const result = await foundUser.save();
 
     // failed: technical issues like connection, ...

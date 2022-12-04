@@ -1,5 +1,5 @@
 const dbConnSettings = {
-  dbName: "DevMedia_DB",
+  dbName: "DevMedia_Database",
   useUnifiedTopology: true,
   useNewUrlParser: true,
 };

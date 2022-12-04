@@ -213,3 +213,9 @@
 2022/12/03-17:18:40 	 e00d9d7b-3ef5-443b-a043-86b99bde4077 	 POST undefined /api/employees 
 2022/12/03-17:18:40 	 e00d9d7b-3ef5-443b-a043-86b99bde4077 	 PUT undefined /api/employees/638b54bb373dfc78befcbd90 
 2022/12/03-17:26:37 	 74a8f6d2-8282-49c6-aa9a-f72a4dbc5582 	 DELETE undefined /api/employees/638b54bb373dfc78befcbd90 
+2022/12/04-18:30:22 	 7083809a-1fe3-42ed-bdbb-db3a2d55c776 	 POST undefined /auth/register 
+2022/12/04-18:31:46 	 a3ad7a78-aa99-4ac2-8261-ef064742fcce 	 POST undefined /auth/register 
+2022/12/04-18:32:45 	 0356496a-3aad-40a6-88bb-ce3f89705eca 	 POST undefined /auth/register 
+2022/12/04-18:32:45 	 0356496a-3aad-40a6-88bb-ce3f89705eca 	 POST undefined /auth/login 
+2022/12/04-18:37:25 	 b4211c59-f164-48c7-900a-2b22606a5d50 	 POST undefined /auth/logout 
+2022/12/04-18:37:25 	 b4211c59-f164-48c7-900a-2b22606a5d50 	 GET undefined /auth/logout 
