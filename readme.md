@@ -79,6 +79,8 @@ npm i cors
 
 ## Routes
 
+is a containers for defining different routes for different models
+
 ## Models
 
 ## Controllers
@@ -109,3 +111,7 @@ npm i cookie-parser
 ## mangoose module/package
 
 npm i mongoose
+
+## express-fileupload module/package
+
+npm i express-fileupload

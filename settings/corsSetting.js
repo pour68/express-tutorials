@@ -1,4 +1,8 @@
-const whitelist = ["http://localhost:3500", "https://www.google.com"];
+const whitelist = [
+  "http://localhost:3500",
+  "http://127.0.0.1:5500",
+  "https://www.google.com",
+];
 
 const corsSettings = (req, callback) => {
   let corsOptions;
