@@ -56,16 +56,13 @@ class AuthController {
     const { username, pwd } = req.body;
 
     const userService = new UserService();
-
     const foundUser = await userService.getByUsername(username);
-
     if (!foundUser)
       return res
         .status(401)
-        .json({ type: "error", message: "user not registered." });
+        .json({ type: "error", message: "user not registered." }); // unauthorized
 
     const match = await bcrypt.compare(pwd, foundUser.password);
-
     if (match) {
       // jwt
       const roles = Object.values(foundUser.roles);
