@@ -1,13 +1,13 @@
 // modules
-const path = require("path");
-const express = require("express");
-const app = express();
-const cors = require("cors");
+const path = require("path"); // ok
+const express = require("express"); // ok
+const app = express(); // ok
+const cors = require("cors"); // ok
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 // middleware handlers
-const loggerMiddleware = require("./middlewares/loggerMiddleware");
-const errorMiddleware = require("./middlewares/errorMiddleware");
+const loggerMiddleware = require("./middlewares/loggerMiddleware"); // ok
+const errorMiddleware = require("./middlewares/errorMiddleware"); // ok
 const jwtVerifyMiddleware = require("./middlewares/jwtVerifyMiddleware");
 // settings
 const corsSetting = require("./settings/corsSetting");
@@ -24,29 +24,29 @@ const employeeRoute = require("./routes/api/employeeRoute");
 // dbConnectionUtil();
 
 // manage logger
-app.use(loggerMiddleware);
+app.use(loggerMiddleware); // ok
 
 // manage cors
-app.use(cors(corsSetting));
+app.use(cors(corsSetting)); // { extends: false } and more details
 
 // manage form data
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false })); // ok
 
 // serialize/deserialize json data
-app.use(express.json());
+app.use(express.json()); // ok
 
 // enable cookies
 app.use(cookieParser());
 
 // static files
-app.use(express.static(path.join(__dirname, "wwwroot")));
-app.use("/courses", express.static(path.join(__dirname, "wwwroot")));
+app.use(express.static(path.join(__dirname, "wwwroot"))); // ok
+app.use("/courses", express.static(path.join(__dirname, "wwwroot"))); // ok
 
 // register routes
-app.use("/", indexRoute);
-app.use("/courses", courseRoute);
+app.use("/", indexRoute); // ok
+app.use("/courses", courseRoute); // ok
 app.use("/files", fileUploadRoute);
-app.use("/auth", authRoute); // auth/register|login
+app.use("/auth", authRoute); // ok
 
 // jwt
 app.use(jwtVerifyMiddleware);
@@ -67,14 +67,12 @@ app.all("*", (req, res) => {
 });
 
 // manage error logger
-app.use(errorMiddleware);
+app.use(errorMiddleware); // ok
 
 // mangodb and server app is up and running
 // mongoose.connection.once("open", () => {
 //   console.log("mongodb is connected...");
 
 const PORT = process.env.PORT || 3500;
-app.listen(PORT, () =>
-  console.log(`server is now up and running on http://localhost:${PORT}`)
-);
+app.listen(PORT, () => console.log(`server is now up and running on http://localhost:${PORT}`));
 // });

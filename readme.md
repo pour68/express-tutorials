@@ -14,7 +14,7 @@ a node module/package to create restful api/microservices.
 ## Setting up development environment
 
 - Install node.js
-- Editor: vscode - atom - sublime text - bracket - vim
+- Editor: vscode - atom - sublime text - bracket - vim - ...
 - npm install express
 
 ## Basic server setup
@@ -58,6 +58,14 @@ example:
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {});
 
+## Environment variable
+
+- windows: terminal + set PORT=5000
+- mac: terminal + export PORT=5000
+
+process.env.NODE_ENV
+app.get("env"): developement|production
+
 ## Middlewares
 
 it's a piece of software that execute between request and response.
@@ -80,6 +88,8 @@ npm i cors
 ## Routes
 
 is a containers for defining different routes for different models
+
+### API
 
 ## Models
 
@@ -115,3 +125,27 @@ npm i mongoose
 ## express-fileupload module/package
 
 npm i express-fileupload
+
+## helmet module/package
+
+npm i helmet
+
+## logger module/package
+
+npm i morgan
+
+## config module/package
+
+npm i config
+
+## Unit and Integration testing
+
+## Test-Driven development
+
+## Clean code and refactoring
+
+## Security best practices
+
+## Useful libraries
+
+## Deployment

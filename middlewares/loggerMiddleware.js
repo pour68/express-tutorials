@@ -14,6 +14,7 @@ const loggerHandler = (req, res, next) => {
     `${req.method} ${req.headers.origin} ${req.url}`,
     "log.txt"
   );
+
   next();
 };
 
