@@ -8,21 +8,13 @@ const employeesController = new EmployeesController();
 
 router
   .route("/")
-  .get(employeesController.getAllEmployees)
-  .post(
-    verifyRolesMiddleware(roles.Admin, roles.Editor),
-    employeesController.createNewEmployee
-  );
+  .get(employeesController.getAll)
+  .post(verifyRolesMiddleware(roles.Admin, roles.Editor), employeesController.create);
 
 router
   .route("/:id")
-  .get(employeesController.getEmployeeById)
-  .delete(
-    verifyRolesMiddleware(roles.Admin),
-    employeesController.deleteEmployee
-  ).put(
-    verifyRolesMiddleware(roles.Admin, roles.Editor),
-    employeesController.updateEmployee
-  );
+  .get(employeesController.getById)
+  .delete(verifyRolesMiddleware(roles.Admin), employeesController.delete)
+  .put(verifyRolesMiddleware(roles.Admin, roles.Editor), employeesController.update);
 
 module.exports = router;

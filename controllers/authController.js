@@ -2,10 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const UserService = require("../services/mangodb/userService");
 const randomSalt = require("../utils/securityUtils");
-const {
-  generateAccessToken,
-  generateRefreshToken,
-} = require("../utils/jwtUtils");
+const { generateAccessToken, generateRefreshToken } = require("../utils/jwtUtils");
 
 class AuthController {
   async register(req, res) {
@@ -13,17 +10,14 @@ class AuthController {
 
     if (!username || !pwd)
       return res.status(400).json({
-        level: "error",
+        type: "error",
         message: "please enter valid username/password.",
       });
 
     const userService = new UserService();
     // check user duplication
     const foundUser = await userService.getByUsername(username);
-    if (foundUser)
-      return res
-        .status(409)
-        .json({ type: "error", message: "user already exist." });
+    if (foundUser) return res.status(409).json({ type: "error", message: "user already exist." });
 
     try {
       const randomValue = randomSalt(100);
@@ -57,10 +51,7 @@ class AuthController {
 
     const userService = new UserService();
     const foundUser = await userService.getByUsername(username);
-    if (!foundUser)
-      return res
-        .status(401)
-        .json({ type: "error", message: "user not registered." }); // unauthorized
+    if (!foundUser) return res.status(401).json({ type: "error", message: "user not registered." }); // unauthorized
 
     const match = await bcrypt.compare(pwd, foundUser.password);
     if (match) {
@@ -109,20 +100,15 @@ class AuthController {
     if (!foundUser) return res.sendStatus(403); // forbidden
 
     // jwt evaluation
-    jwt.verify(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET,
-      (err, decoded) => {
-        if (err || foundUser.username !== decoded.username)
-          return res.sendStatus(403); // forbidden
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+      if (err || foundUser.username !== decoded.username) return res.sendStatus(403); // forbidden
 
-        const roles = Object.values(foundUser.roles);
-        const payload = { roles, username: foundUser.username };
-        const accessToken = generateAccessToken(payload, "15m");
+      const roles = Object.values(foundUser.roles);
+      const payload = { roles, username: foundUser.username };
+      const accessToken = generateAccessToken(payload, "15m");
 
-        res.json({ accessToken });
-      }
-    );
+      res.json({ accessToken });
+    });
   }
 
   async logout(req, res) {

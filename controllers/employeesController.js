@@ -1,7 +1,7 @@
 const EmployeeService = require("../services/mangodb/employeeService");
 
 class EmployeesController {
-  async getAllEmployees(req, res) {
+  async getAll(req, res) {
     const employeeService = new EmployeeService();
     try {
       // success
@@ -17,7 +17,7 @@ class EmployeesController {
     }
   }
 
-  async getEmployeeById(req, res) {
+  async getById(req, res) {
     const { id } = req.params;
 
     const employeeService = new EmployeeService();
@@ -32,7 +32,7 @@ class EmployeesController {
     return res.status(200).json(employee);
   }
 
-  async createNewEmployee(req, res) {
+  async create(req, res) {
     if (!req?.body) return res.sendStatus(400);
 
     const { firstname, lastname } = req.body;
@@ -71,7 +71,7 @@ class EmployeesController {
     }
   }
 
-  async updateEmployee(req, res) {
+  async update(req, res) {
     if (!req?.body || !req?.params?.id) return res.sendStatus(400);
     if (req.body.id !== req.params.id) return res.sendStatus(400);
 
@@ -112,7 +112,7 @@ class EmployeesController {
     }
   }
 
-  async deleteEmployee(req, res) {
+  async delete(req, res) {
     if (!req?.params?.id) return res.sendStatus(400);
 
     const { id } = req.params;
